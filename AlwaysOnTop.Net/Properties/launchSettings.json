@@ -2,7 +2,7 @@
   "profiles": {
     "AlwaysOnTop.Net": {
       "commandName": "Project",
-      "commandLineArgs": "\"Samsung DeX\""
+      "commandLineArgs": "\"Notepad\""
     }
   }
 }

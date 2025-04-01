@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace AlwaysOnTop.Net
 {
+
     
-    public delegate bool CallBack(int hwnd, string lParam);
+    public delegate bool CallBack(int hwnd, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
 
     internal class Program
     {
@@ -13,6 +15,10 @@ namespace AlwaysOnTop.Net
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
 
         [DllImport("user32.dll")]
@@ -36,8 +42,13 @@ namespace AlwaysOnTop.Net
 
         public static bool WindowFound(int hwnd, string lParam)
         {
-            Console.Write("Window handle is ");
-            Console.WriteLine(hwnd);
+
+            StringBuilder sb = new StringBuilder(1024);
+            GetClassName(hwnd, sb, sb.Capacity);
+            if(sb.ToString() == lParam)
+            {
+                WindowList.Add(hwnd);
+            }
             return true;
         }
 
@@ -69,6 +80,8 @@ window name or window class.
 
             while(true)
             {
+                windowHandle = IntPtr.Zero;
+                WindowList.Clear();
                 Console.WriteLine($"Attempting to acquire windows with class name [{windowName}]");
                 while (windowHandle == IntPtr.Zero)                
                 {
@@ -79,7 +92,6 @@ window name or window class.
                         windowHandle = FindWindow(null, windowName);
                         if(windowHandle != IntPtr.Zero)
                         {
-                            WindowList.Clear();
                             WindowList.Add(windowHandle);
                         }
                     }
@@ -94,7 +106,8 @@ window name or window class.
                         Console.ForegroundColor = ConsoleColor.Gray;
                         Console.WriteLine(" windows were found in that class name.");
                     }
-                    if(windowHandle == null)
+
+                    if(WindowList.Count == 0)
                     {
                         Console.ForegroundColor= ConsoleColor.Red;
                         Console.WriteLine("No window found. Trying again in 3.5 seconds.");

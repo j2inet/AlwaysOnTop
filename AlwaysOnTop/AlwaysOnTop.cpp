@@ -37,6 +37,9 @@ BOOL CALLBACK WindowFound(HWND hWnd, LPARAM lParam)
 int wmain(int argc, wchar_t** argv)
 {
 
+    auto consoleHandle = GetConsoleWindow();
+    ShowWindow(consoleHandle, SW_HIDE);
+
     HWND windowHandle = nullptr;
     std::wstring windowName ;
     if (argc < 2) {
@@ -95,8 +98,8 @@ int wmain(int argc, wchar_t** argv)
         );
         
 
-        std::wcout << L"Waiting 7.5 seconds" << std::endl;
-        Sleep(7500);
+        std::wcout << L"Waiting 15 seconds" << std::endl;
+        Sleep(15000);
         
         SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN| FOREGROUND_INTENSITY);
         std::wcout << "Wait expired. Looping." << std::endl;
